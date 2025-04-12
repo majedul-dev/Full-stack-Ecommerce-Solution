@@ -7,8 +7,7 @@ const router = require('./routes')
 
 const app = express()
 const allowedOrigins = [
-    'https://3000-mazedul956-*.gitpod.io', // Wildcard for dynamic subdomains
-    'https://3000-mazedul956-ecommercesol-vh0txgc5lvq.ws-us118.gitpod.io' // Exact origin
+    'https://3000-majeduldev-fullstackeco-emaatv5g85b.ws-us118.gitpod.io'
   ];
   
   const corsOptions = {

@@ -27,7 +27,7 @@ export default async function ProductsPage({ searchParams }) {
   const { data: products, pagination } = await getAllProducts(searchParams);
 
   return (
-    <div className="p-6">
+    <div>
       <PageHeader title="Products Management" actionHref="/products/new" actionText="New Product" Icon={PlusIcon}/>
       <Filters entity="products" filterOptions={filterOptions} existingFilters={searchParams}/>
       <ProductsPageWrapper 

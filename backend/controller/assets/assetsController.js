@@ -30,6 +30,7 @@ const getAllAssets = async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching assets:', error);
+    console.log('Error fetching assets:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to fetch assets'

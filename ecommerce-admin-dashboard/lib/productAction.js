@@ -64,7 +64,7 @@ export const createNewProduct =  async (productData, accessToken) => {
 
 export const updateProduct =  async (productData, productId, accessToken) => {
   try {
-    const response = await axios.patch(`https://8080-mazedul956-ecommercesol-vh0txgc5lvq.ws-us118.gitpod.io/api/product/update-product/${productId}`, productData, {
+    const response = await axios.patch(`${process.env.BACKEND_URL}/api/product/update-product/${productId}`, productData, {
       withCredentials: true,
       headers: {
         "Content-Type": "application/json",

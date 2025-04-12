@@ -1,28 +1,5 @@
 const mongoose = require('mongoose')
 
-
-// const userSchema = new mongoose.Schema({
-//     name : String,
-//     email : {
-//         type : String,
-//         unique : true,
-//         required : true
-//     },
-//     password : String,
-//     profilePic : String,
-//     role : String,
-// },{
-//     timestamps : true
-// })
-
-
-// const userModel =  mongoose.model("user",userSchema)
-
-
-// module.exports = userModel
-
-
-// Define the user schema
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -53,8 +30,8 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['GENERAL', 'ADMIN'],
-      default: 'GENERAL',
+      enum: ['user', 'admin', 'editor'],
+      default: 'user',
     },
     address: {
         street: String,
@@ -65,7 +42,7 @@ const userSchema = new mongoose.Schema(
     },
     status: {
         type: String,
-        enum: ['active', 'inactive', 'banned'],
+        enum: ['active', 'inactive', 'blocked'],
         default: 'active',
     },
   },
