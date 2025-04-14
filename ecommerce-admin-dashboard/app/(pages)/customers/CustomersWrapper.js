@@ -9,7 +9,7 @@ const CustomersWrapper = ({ users, pagination, currentPage }) => {
   return (
     <div>
         <CustomerTable users={users} />
-        <Pagination currentPage={currentPage} totalPages={pagination.totalPages} />
+        <Pagination currentPage={currentPage} totalPages={pagination?.totalPages} />
     </div>
   )
 }

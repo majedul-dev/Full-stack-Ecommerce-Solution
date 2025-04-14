@@ -6,19 +6,20 @@ const authToken = require('../middleware/authToken')
 const { uploadProduct, updateProduct, searchProduct, singleProductDetails, getAllProducts, getCategoryWiseProducts, getProductsByCategory, filterProduct} = require("../controller/product")
 const {createOrder, deleteOrder, getOrderById, getOrdersByAdmin, getOrdersByUser, updateOrderStatus} = require('../controller/order')
 const { addToCart, viewCart, deleteCartProduct } = require('../controller/cart')
-const {allUsers, updateUser, userDetails, logoutUser, userSignIn, userSignUp} = require("../controller/user")
+const {allUsers, updateUser, userDetails, getUserDetailsById, logoutUser, userSignIn, userSignUp} = require("../controller/user")
 const { getAllAssets, deleteAssets } = require('../controller/assets/assetsController')
 const {createCategory, getAllCategoriesByAdmin, updateCategory, deleteCategory, getParentCategories, getCategoryById} = require("../controller/category")
 
 // users routes
 router.post("/signup",userSignUp)
 router.post("/signin",userSignIn)
-router.get("/user-details",authToken,userDetails)
+router.get("/user-details",authToken, userDetails)
+router.get("/user-details/:id",authToken, getUserDetailsById)
 router.post("/userLogout",logoutUser)
 
 //admin panel routes
 router.get("/all-user",authToken,allUsers)
-router.post("/update-user",authToken,updateUser)
+router.patch("/update-user/:id",authToken,updateUser)
 
 //product routes
 router.post("/product/upload-product",authToken,uploadProduct)

@@ -43,7 +43,7 @@ const DataTable = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((item) => (
+          {data?.map((item) => (
             <TableRow key={item[keyField]} className="hover:bg-gray-50">
               {hasSelection && (
                 <TableCell>
