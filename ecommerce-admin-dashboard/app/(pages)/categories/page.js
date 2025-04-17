@@ -36,7 +36,7 @@ export default async function CategoriesPage({ searchParams }) {
   ];
 
   return (
-    <div className="p-6">
+    <div>
       <PageHeader title="Categories Management" actionHref="/categories/new" actionText="Add Category" Icon={PlusIcon}/>
       <Filters entity="categories" filterOptions={filterOptions} existingFilters={searchParams} />
       <CategoriesPageWrapper

@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react'
-import Pagination from '../../../components/Pagination';
+import Pagination from '@/components/Pagination';
 import DeleteModal from '@/components/DeleteModal';
 import ProductsTable from './ProductsTable';
 

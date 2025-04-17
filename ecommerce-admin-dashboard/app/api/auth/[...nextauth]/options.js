@@ -48,24 +48,35 @@ export const authOptions = {
           id: user.id,
           name: user.name,
           email: user.email,
-          accessToken: user.token, // Store the token as accessToken
+          accessToken: user.token,
+          expiresAt: Date.now() + 1 * 60 * 60 * 1000
         };
       }
+
+      if (token.expiresAt && Date.now() > token.expiresAt) {
+        return {};
+      }
+
       return token;
     },
     async session({ session, token }) {
+      if (!token.accessToken) {
+        return {};
+      }
+
       session.user = {
         id: token.id,
         name: token.name,
         email: token.email,
       };
-      session.accessToken = token.accessToken; // Token is available here
+      session.accessToken = token.accessToken;
+      session.expires = new Date(token.expiresAt).toISOString();
+
       return session;
     },
   },
   pages: {
     signIn: "/login",
-    // signIn: "/dashboard",
   },
   session: {
     strategy: "jwt",

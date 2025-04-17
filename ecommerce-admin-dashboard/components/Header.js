@@ -1,15 +1,15 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { 
-  MagnifyingGlassIcon,
-  UserCircleIcon,
-  BellIcon,
-  ChatBubbleOvalLeftIcon,
-  SunIcon,
-  MoonIcon,
-  Bars3Icon,
-  XMarkIcon
-} from '@heroicons/react/24/outline';
+  Search,
+  User,
+  Bell,
+  MessageSquare,
+  Sun,
+  Moon,
+  Menu,
+  X
+} from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { useSession, signOut } from "next-auth/react";
 import Link from 'next/link';
@@ -46,7 +46,6 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      // 1. Call external API logout
       const apiResponse = await fetch(`https://8080-majeduldev-fullstackeco-emaatv5g85b.ws-us118.gitpod.io/api/userLogout`, {
         method: 'POST'
       });
@@ -56,7 +55,6 @@ const Header = () => {
         throw new Error('logout failed');
       }
 
-      // 2. Clear NextAuth session
       await signOut({
         redirect: true,
         callbackUrl: "/login"
@@ -67,7 +65,6 @@ const Header = () => {
     }
   };
 
-  // Close menus when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (!e.target.closest('.mobile-menu') && !e.target.closest('.mobile-menu-toggle')) {
@@ -88,77 +85,72 @@ const Header = () => {
   };
 
   return (
-    <header className={`${isDark ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} 
-      shadow-sm border-b ${isDark ? 'border-gray-700' : 'border-gray-200'} px-4 md:px-6 py-4`}>
-      <div className="flex items-center justify-between h-12">
+    <header className="bg-background border-b sticky top-0 z-40 w-full">
+      <div className="container flex h-16 items-center justify-between px-4">
         {/* Mobile Menu Toggle */}
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden hover:bg-gray-100 dark:hover:bg-gray-700 mobile-menu-toggle"
+          className="md:hidden"
         >
           {isMobileMenuOpen ? (
-            <XMarkIcon className="h-6 w-6" />
+            <X className="h-5 w-5" />
           ) : (
-            <Bars3Icon className="h-6 w-6" />
+            <Menu className="h-5 w-5" />
           )}
+          <span className="sr-only">Toggle menu</span>
         </Button>
 
         {/* Desktop Search Bar */}
-        <div className="hidden md:flex flex-1 max-w-2xl mx-4">
+        <div className="hidden md:flex flex-1 max-w-md mx-4">
           <div className="relative w-full">
-            <MagnifyingGlassIcon
-              className={`h-5 w-5 absolute left-3 top-3 ${
-                isDark ? 'text-gray-400' : 'text-gray-500'
-              }`}
-            />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
               placeholder="Search orders, products, users..."
-              className={`w-full pl-10 ${
-                isDark ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-300'
-              }`}
+              className="w-full pl-9"
             />
           </div>
         </div>
 
         {/* Desktop Icons */}
-        <div className="hidden md:flex items-center space-x-2">
+        <div className="hidden md:flex items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
             onClick={toggleTheme}
-            className="hover:bg-gray-100 dark:hover:bg-gray-700"
           >
             {isDark ? (
-              <SunIcon className="h-6 w-6" />
+              <Sun className="h-5 w-5" />
             ) : (
-              <MoonIcon className="h-6 w-6" />
+              <Moon className="h-5 w-5" />
             )}
+            <span className="sr-only">Toggle theme</span>
           </Button>
 
           <Popover open={notificationsOpen} onOpenChange={setNotificationsOpen}>
             <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon" className="relative hover:bg-gray-100 dark:hover:bg-gray-700">
-                <BellIcon className="h-6 w-6" />
+              <Button variant="ghost" size="icon" className="relative">
+                <Bell className="h-5 w-5" />
                 {notifications.length > 0 && (
-                  <Badge className="absolute top-0 right-0 h-4 w-4 p-0 flex items-center justify-center">
+                  <Badge className="absolute top-0 right-0 h-5 w-5 p-0 flex items-center justify-center rounded-full">
                     {notifications.length}
                   </Badge>
                 )}
+                <span className="sr-only">Notifications</span>
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-80 p-0" align="end">
-              <div className="px-4 py-2 font-medium border-b dark:border-gray-700">Notifications</div>
+              <div className="p-4 font-medium border-b">Notifications</div>
               <ScrollArea className="h-60">
                 {notifications.map((notification) => (
                   <div
                     key={notification.id}
-                    className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className="p-4 hover:bg-accent transition-colors"
                   >
                     <div className="text-sm">{notification.text}</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">{notification.time}</div>
+                    <div className="text-xs text-muted-foreground">{notification.time}</div>
                   </div>
                 ))}
               </ScrollArea>
@@ -169,18 +161,18 @@ const Header = () => {
             variant="ghost"
             size="icon"
             onClick={() => setChatOpen(!chatOpen)}
-            className="hover:bg-gray-100 dark:hover:bg-gray-700"
           >
-            <ChatBubbleOvalLeftIcon className="h-6 w-6" />
+            <MessageSquare className="h-5 w-5" />
+            <span className="sr-only">Messages</span>
           </Button>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="hover:bg-gray-100 dark:hover:bg-gray-700 gap-2">
+              <Button variant="ghost" className="gap-2">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={session?.user?.image} />
-                  <AvatarFallback>
-                    <UserCircleIcon className="h-8 w-8" />
+                  <AvatarFallback className="bg-muted">
+                    <User className="h-4 w-4" />
                   </AvatarFallback>
                 </Avatar>
                 <span className="font-medium">{session?.user?.name}</span>
@@ -188,7 +180,7 @@ const Header = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-48" align="end">
               <DropdownMenuItem asChild>
-                <Link href="/dashboard/profile">View Profile</Link>
+                <Link href="/dashboard/profile">Profile</Link>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleLogout}>
                 Sign Out
@@ -198,35 +190,37 @@ const Header = () => {
         </div>
 
         {/* Mobile Icons */}
-        <div className="md:hidden flex flex-grow justify-center space-x-2">
+        <div className="md:hidden flex items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setNotificationsOpen(true)}
-            className="relative hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="relative"
           >
-            <BellIcon className="h-6 w-6" />
+            <Bell className="h-5 w-5" />
             {notifications.length > 0 && (
-              <Badge className="absolute top-0 right-0 h-4 w-4 p-0 flex items-center justify-center">
+              <Badge className="absolute top-0 right-0 h-5 w-5 p-0 flex items-center justify-center rounded-full">
                 {notifications.length}
               </Badge>
             )}
+            <span className="sr-only">Notifications</span>
           </Button>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover:bg-gray-100 dark:hover:bg-gray-700">
+              <Button variant="ghost" size="icon">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={session?.user?.image} />
-                  <AvatarFallback>
-                    <UserCircleIcon className="h-8 w-8" />
+                  <AvatarFallback className="bg-muted">
+                    <User className="h-4 w-4" />
                   </AvatarFallback>
                 </Avatar>
+                <span className="sr-only">User menu</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-48" align="end">
               <DropdownMenuItem asChild>
-                <Link href="/dashboard/profile">View Profile</Link>
+                <Link href="/dashboard/profile">Profile</Link>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleLogout}>
                 Sign Out
@@ -238,60 +232,46 @@ const Header = () => {
 
       {/* Mobile Menu */}
       <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-        <SheetContent side="left" className="w-64 p-0">
-          <SheetHeader className="p-4 border-b dark:border-gray-700">
-            <div className="flex items-center justify-between mb-4">
-              <SheetTitle>Menu</SheetTitle>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <XMarkIcon className="h-6 w-6" />
-              </Button>
-            </div>
-            <div className="relative">
-              <MagnifyingGlassIcon
-                className={`h-5 w-5 absolute left-3 top-3 ${
-                  isDark ? 'text-gray-400' : 'text-gray-500'
-                }`}
-              />
+        <SheetContent side="left" className="w-[300px] sm:w-[350px]">
+          <SheetHeader>
+            <SheetTitle>Menu</SheetTitle>
+          </SheetHeader>
+          <div className="py-4">
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
                 placeholder="Search..."
-                className={`w-full pl-10 ${
-                  isDark ? 'bg-gray-700' : 'bg-gray-50'
-                }`}
+                className="w-full pl-9"
               />
             </div>
-          </SheetHeader>
 
-          <div className="p-4 space-y-2">
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-              onClick={toggleTheme}
-            >
-              {isDark ? (
-                <SunIcon className="h-6 w-6" />
-              ) : (
-                <MoonIcon className="h-6 w-6" />
-              )}
-              <span>Toggle Theme</span>
-            </Button>
+            <div className="space-y-1">
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-2"
+                onClick={toggleTheme}
+              >
+                {isDark ? (
+                  <Sun className="h-4 w-4" />
+                ) : (
+                  <Moon className="h-4 w-4" />
+                )}
+                <span>Toggle Theme</span>
+              </Button>
 
-            <Button
-              variant="ghost"
-              className="w-full justify-start gap-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-              onClick={() => {
-                setChatOpen(true);
-                setIsMobileMenuOpen(false);
-              }}
-            >
-              <ChatBubbleOvalLeftIcon className="h-6 w-6" />
-              <span>Support Chat</span>
-            </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-2"
+                onClick={() => {
+                  setChatOpen(true);
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <MessageSquare className="h-4 w-4" />
+                <span>Support Chat</span>
+              </Button>
+            </div>
           </div>
         </SheetContent>
       </Sheet>
@@ -308,7 +288,7 @@ const Header = () => {
                 <div
                   key={index}
                   className={`p-2 rounded-lg ${
-                    message.sent ? 'bg-blue-100 dark:bg-blue-900 ml-auto' : 'bg-gray-100 dark:bg-gray-700'
+                    message.sent ? 'bg-primary/10 ml-auto' : 'bg-muted'
                   }`}
                   style={{ maxWidth: '80%' }}
                 >
@@ -321,7 +301,7 @@ const Header = () => {
             <Input
               type="text"
               value={newMessage}
-              onChange={(e) => setNewMessage(e.value)}
+              onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Type a message..."
             />
             <Button type="submit">Send</Button>
@@ -339,10 +319,10 @@ const Header = () => {
             {notifications.map((notification) => (
               <Card
                 key={notification.id}
-                className="p-4 mb-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="p-4 mb-2 hover:bg-muted transition-colors"
               >
                 <div className="text-sm">{notification.text}</div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">{notification.time}</div>
+                <div className="text-xs text-muted-foreground">{notification.time}</div>
               </Card>
             ))}
           </ScrollArea>

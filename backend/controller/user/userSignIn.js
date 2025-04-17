@@ -1,63 +1,3 @@
-// const bcrypt = require('bcryptjs')
-// const userModel = require('../../models/userModel')
-// const jwt = require('jsonwebtoken');
-
-// async function userSignInController(req,res){
-//     try{
-//         const { email , password} = req.body
-
-//         if(!email){
-//             throw new Error("Please provide email")
-//         }
-//         if(!password){
-//              throw new Error("Please provide password")
-//         }
-
-//         const user = await userModel.findOne({email})
-
-//        if(!user){
-//             throw new Error("User not found")
-//        }
-
-//        const checkPassword = await bcrypt.compare(password,user.password)
-
-//        console.log("checkPassoword",checkPassword)
-
-//        if(checkPassword){
-//         const tokenData = {
-//             _id : user._id,
-//             email : user.email,
-//         }
-//         const token = await jwt.sign(tokenData, process.env.TOKEN_SECRET_KEY, { expiresIn: 60 * 60 * 8 });
-
-//         const tokenOption = {
-//             httpOnly : true,
-//             secure : true
-//         }
-
-//         res.cookie("token",token,tokenOption).status(200).json({
-//             message : "Login successfully",
-//             data : token,
-//             success : true,
-//             error : false
-//         })
-
-//        }else{
-//          throw new Error("Please check Password")
-//        }
-
-//     }catch(err){
-//         res.json({
-//             message : err.message || err  ,
-//             error : true,
-//             success : false,
-//         })
-//     }
-
-// }
-
-// module.exports = userSignInController
-
 const bcrypt = require("bcryptjs");
 const userModel = require("../../models/userModel");
 const jwt = require("jsonwebtoken");
@@ -65,7 +5,6 @@ const Joi = require("joi");
 
 async function userSignInController(req, res) {
   try {
-    // Validate input using Joi
     const schema = Joi.object({
       email: Joi.string().email().required().messages({
         "string.email": "Invalid email format",
@@ -88,7 +27,6 @@ async function userSignInController(req, res) {
 
     const { email, password } = req.body;
 
-    // Find user by email
     const user = await userModel.findOne({ email });
     if (!user) {
       return res.status(404).json({
@@ -98,7 +36,6 @@ async function userSignInController(req, res) {
       });
     }
 
-    // Compare password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({
@@ -108,25 +45,22 @@ async function userSignInController(req, res) {
       });
     }
 
-    // Create JWT token
     const tokenData = {
       _id: user._id,
       email: user.email,
       role: user.role,
     };
     const token = jwt.sign(tokenData, process.env.TOKEN_SECRET_KEY, {
-      expiresIn: "8h", // Token expires in 8 hours
+      expiresIn: "1h",
     });
 
-    // Cookie options
     const tokenOptions = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // Secure in production
-      sameSite: "Lax", // Prevent CSRF attacks
-      maxAge: 72 * 60 * 60 * 1000, // 8 hours in milliseconds
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+      maxAge: 1 * 60 * 60 * 1000,
     };
 
-    // Send response with token in a cookie
     res
       .cookie("token", token, tokenOptions)
       .header("Authorization", `Bearer ${token}`)
@@ -144,7 +78,7 @@ async function userSignInController(req, res) {
         },
       });
   } catch (err) {
-    console.error(err); // Log the error for debugging
+    console.error(err);
     res.status(500).json({
       success: false,
       error: true,

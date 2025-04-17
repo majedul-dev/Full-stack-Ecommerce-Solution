@@ -4,7 +4,7 @@ const Category = require('../../models/categoryModel'); // Import your Category 
 const getAllCategoriesByAdmin = async (req, res) => {
   try {
     // Optional query parameters
-    const { search, isActive, sortBy, sortOrder, page, limit } = req.query;
+    const { search, isActive, sortBy, sortOrder, page = 1, limit = 5 } = req.query;
 
     // Build the query
     const query = {isDeleted: false}; // Exclude soft-deleted categories
@@ -24,22 +24,20 @@ const getAllCategoriesByAdmin = async (req, res) => {
     } else {
       sort.createdAt = -1;
     }
-
-    // Pagination
-    const pageNumber = parseInt(page, 10) || 1;
-    const limitNumber = parseInt(limit, 10) || 10;
-    const skip = (pageNumber - 1) * limitNumber;
+    const skip = (page - 1) * limit;
 
     // Fetch categories from the database
     const categories = await Category.find(query)
       .sort(sort)
       .skip(skip)
-      .limit(limitNumber)
+      .limit(parseInt(limit))
       .populate('parent', 'name slug') // Populate parent category details
       .populate('children', 'name slug'); // Populate child categories
 
     // Count total documents for pagination
     const total = await Category.countDocuments(query);
+
+    const totalPages = Math.ceil(total / limit);
 
     // Return the response
     res.status(200).json({
@@ -47,9 +45,9 @@ const getAllCategoriesByAdmin = async (req, res) => {
       data: categories,
       pagination: {
         total,
-        page: pageNumber,
-        limit: limitNumber,
-        totalPages: Math.ceil(total / limitNumber),
+        page,
+        limit: parseInt(limit),
+        totalPages
       },
     });
   } catch (error) {
