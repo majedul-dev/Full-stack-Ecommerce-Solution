@@ -35,11 +35,11 @@ const ProductsPageWrapper = ({ products, pagination, currentPage}) => {
   return (
     <div>
         <ProductsTable 
-            products={products}
-            selectedProducts={selectedProducts} 
-            toggleSelectProduct={toggleSelectProduct}
-            toggleSelectAll={toggleSelectAll}
-            onDeleteClick={() => setIsDeleteModalOpen(true)}
+          products={products}
+          selectedProducts={selectedProducts} 
+          toggleSelectProduct={toggleSelectProduct}
+          toggleSelectAll={toggleSelectAll}
+          onDeleteClick={() => setIsDeleteModalOpen(true)}
         />
         <Pagination currentPage={currentPage} totalPages={pagination.totalPages} />
         <DeleteModal

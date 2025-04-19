@@ -4,6 +4,7 @@ const getParentCategories = require("./getParentCategories")
 const updateCategory = require("./updateCategory")
 const deleteCategory = require("./deleteCategory")
 const getCategoryById = require("./getCategoryById")
+const getIndividualCategory = require("./getIndividualCategories")
 
 module.exports = {
     createCategory,
@@ -11,5 +12,6 @@ module.exports = {
     getParentCategories,
     updateCategory,
     deleteCategory,
-    getCategoryById
+    getCategoryById,
+    getIndividualCategory
 }

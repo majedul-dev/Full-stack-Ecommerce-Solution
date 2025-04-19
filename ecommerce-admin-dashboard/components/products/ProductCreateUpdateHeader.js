@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; 
+import { useRouter, useSearchParams, usePathname } from "next/navigation"; 
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { createNewProduct, updateProduct } from "@/lib/productAction";
 import { useSession } from "next-auth/react";
@@ -12,6 +12,14 @@ const ProductCreateUpdateHeader = ({ productData, validateForm, isEditPage, prod
   const [status, setStatus] = useState("draft");
   const [loading, setLoading] = useState(false);
   const router = useRouter(); 
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const returnParams = new URLSearchParams(searchParams);
+  returnParams.delete('returnUrl');
+
+  const returnUrl = searchParams.get('returnUrl') 
+    ? `${searchParams.get('returnUrl')}?${returnParams.toString()}`
+    : `/products?${returnParams.toString()}`;
 
   const handleSubmitCreate = async (e) => {
     e.preventDefault();
@@ -24,13 +32,13 @@ const ProductCreateUpdateHeader = ({ productData, validateForm, isEditPage, prod
     setLoading(false); 
     
     if(products?.success) {
-      router.push("/products");
+      router.push(returnUrl);
     }
   };
 
   const handleSubmitUpdate = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    // if (!validateForm()) return;
 
     setLoading(true); 
     console.log(loading)
@@ -42,14 +50,14 @@ const ProductCreateUpdateHeader = ({ productData, validateForm, isEditPage, prod
 
     
     if(products?.success) {
-      router.push("/products");
+      router.push(returnUrl);
     }
   };
 
   return (
     <div className="flex justify-between items-center mb-6">
       <Link
-        href="/products"
+        href={returnUrl}
         className="flex items-center text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100 transition-colors"
       >
         <ArrowLeftIcon className="h-5 w-5 mr-2" />

@@ -1,6 +1,6 @@
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 
-export const productActions = (toggleSelect, onDelete) => [
+export const productActions = (toggleSelect, onDelete, router) => [
     {
       key: 'edit',
       icon: PencilSquareIcon,

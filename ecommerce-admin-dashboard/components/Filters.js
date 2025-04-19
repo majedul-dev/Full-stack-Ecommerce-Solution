@@ -172,12 +172,12 @@ export default function Filters({ entity, filterOptions, existingFilters }) {
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                {options?.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
+                {options?.map((option) => {
+                  return(
+                  <SelectItem key={option.value} value={option.label}>
                     {option.label}
                   </SelectItem>
-                ))}
+                )})}
               </SelectContent>
             </Select>
           )}

@@ -7,8 +7,8 @@ const { uploadProduct, updateProduct, searchProduct, singleProductDetails, getAl
 const {createOrder, deleteOrder, getOrderById, getOrdersByAdmin, getOrdersByUser, updateOrderStatus} = require('../controller/order')
 const { addToCart, viewCart, deleteCartProduct } = require('../controller/cart')
 const {allUsers, updateUser, userDetails, getUserDetailsById, logoutUser, userSignIn, userSignUp} = require("../controller/user")
-const { getAllAssets, deleteAssets } = require('../controller/assets/assetsController')
-const {createCategory, getAllCategoriesByAdmin, updateCategory, deleteCategory, getParentCategories, getCategoryById} = require("../controller/category")
+const { getAllAssets,createOrUpdateAsset, deleteAssets } = require('../controller/assets/assetsController')
+const {createCategory, getAllCategoriesByAdmin, updateCategory, deleteCategory, getParentCategories, getCategoryById, getIndividualCategory} = require("../controller/category")
 
 // users routes
 router.post("/signup",userSignUp)
@@ -46,11 +46,13 @@ router.get("/order/allordersbyuser",authToken, getOrdersByUser)
 
 // cloudinary assets
 router.get("/assets", getAllAssets)
+router.post("/assets/metadata", createOrUpdateAsset)
 router.delete("/assets", deleteAssets)
 
 // category routes
 router.post("/category", authToken, createCategory);
 router.get("/category", getAllCategoriesByAdmin);
+router.get("/category-individual", getIndividualCategory);
 router.get("/category/parent", getParentCategories);
 router.get("/category/:id", getCategoryById);
 router.patch("/category/:id", authToken, updateCategory);

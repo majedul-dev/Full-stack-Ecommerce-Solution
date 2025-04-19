@@ -1,45 +1,37 @@
-const Category = require('../../models/categoryModel'); // Import your Category model
+const Category = require('../../models/categoryModel');
 
-// Get all categories with search, filtering, sorting, and pagination
 const getAllCategoriesByAdmin = async (req, res) => {
   try {
-    // Optional query parameters
-    const { search, isActive, sortBy, sortOrder, page = 1, limit = 5 } = req.query;
+    const { search, isActive, sortBy, sortOrder, page = 1, limit = 10 } = req.query;
 
-    // Build the query
-    const query = {isDeleted: false}; // Exclude soft-deleted categories
+    const query = {isDeleted: false};
     if (isActive !== undefined) {
-      query.isActive = isActive === 'true'; // Convert string to boolean
+      query.isActive = isActive === 'true';
     }
 
-    // Add search functionality
     if (search) {
-      query.name = { $regex: search, $options: 'i' }; // Case-insensitive search
+      query.name = { $regex: search, $options: 'i' };
     }
 
-    // Build the sort object
     const sort = {};
     if (sortBy) {
-      sort[sortBy] = sortOrder === 'desc' ? -1 : 1; // Default to ascending order
+      sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
     } else {
       sort.createdAt = -1;
     }
     const skip = (page - 1) * limit;
 
-    // Fetch categories from the database
     const categories = await Category.find(query)
       .sort(sort)
       .skip(skip)
       .limit(parseInt(limit))
-      .populate('parent', 'name slug') // Populate parent category details
-      .populate('children', 'name slug'); // Populate child categories
+      .populate('parent', 'name slug') 
+      .populate('children', 'name slug');
 
-    // Count total documents for pagination
     const total = await Category.countDocuments(query);
 
     const totalPages = Math.ceil(total / limit);
 
-    // Return the response
     res.status(200).json({
       message: 'Categories retrieved successfully.',
       data: categories,

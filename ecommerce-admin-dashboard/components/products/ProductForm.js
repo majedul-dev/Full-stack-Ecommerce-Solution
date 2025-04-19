@@ -10,12 +10,14 @@ import SideNavigation from "./SideNavigation";
 import ProductCreateUpdateHeader from "./ProductCreateUpdateHeader";
 import uploadImage from "@/lib/utils/uploadImage";
 import AssetLibrary from "../AssetsLibrary";
-const categories = ["Electronics", "Fashion", "Home & Kitchen", "Books"];
+import axios from "axios";
+// const categories = ["Electronics", "Fashion", "Home & Kitchen", "Books"];
 const brands = ["Apple", "Samsung", "Nike", "Sony"];
 
 const ProductForm = ({product, isEditPage, productId}) => {
 
   const [tempTag, setTempTag] = useState("");
+  const [categories, setCategories] = useState([]);
   const [loadingImgUpload, setLoadingImgUpload] = useState(false);
   const [activeSection, setActiveSection] = useState("basic");
   const [productData, setProductData] = useState({
@@ -51,7 +53,17 @@ const ProductForm = ({product, isEditPage, productId}) => {
   };
 
   useEffect(() => {
-
+    async function getAllCategories() {
+      try {
+        const res = await axios.get(`https://8080-majeduldev-fullstackeco-emaatv5g85b.ws-us118.gitpod.io/api/category-individual`);
+        
+        setCategories(res.data.data)
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        throw new Error(error.message);
+      }
+    }
+    getAllCategories()
   }, [])
   
 
@@ -207,8 +219,8 @@ const ProductForm = ({product, isEditPage, productId}) => {
                     >
                       <option value="">Select Category</option>
                       {categories.map((category) => (
-                        <option key={category} value={category}>
-                          {category}
+                        <option key={category.id} value={category.name}>
+                          {category.name}
                         </option>
                       ))}
                     </select>
@@ -399,7 +411,7 @@ const ProductForm = ({product, isEditPage, productId}) => {
 
           {activeSection === "media" && (
             <div className="space-y-6">
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+              {/* <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
                 <input
                   type="file"
                   multiple
@@ -413,7 +425,7 @@ const ProductForm = ({product, isEditPage, productId}) => {
                     Drag and drop images or click to upload
                   </p>
                 </label>
-              </div>
+              </div> */}
 
               {/* Select from Library Button */}
               <button
@@ -441,16 +453,16 @@ const ProductForm = ({product, isEditPage, productId}) => {
                   </div>
                 )})}
               </div>
-              <button
+              {/* <button
                 onClick={handleUploadImages}
                 className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
                 disabled={loadingImgUpload}
               >
                 Upload
-              </button>
-              <div className="text-xs text-red-600">
+              </button> */}
+              {/* <div className="text-xs text-red-600">
                 Once uploaded, images can only be delete from the library.
-              </div>
+              </div> */}
 
               {showLibrary && (
               <AssetLibrary

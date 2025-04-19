@@ -1,5 +1,5 @@
 import { getProductDetails } from "@/lib/productAction";
-import ProductForm from "../../../../../components/products/ProductForm";
+import ProductForm from "@/components/products/ProductForm";
 
 export default async function EditProduct({params}) {
   const resolvedParams = await params;

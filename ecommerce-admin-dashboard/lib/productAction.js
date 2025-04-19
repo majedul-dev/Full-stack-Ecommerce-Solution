@@ -40,7 +40,7 @@ export async function getProductDetails(productId) {
 
 export const createNewProduct =  async (productData, accessToken) => {
   try {
-    const response = await axios.post(`${process.env.BACKEND_URL}/api/product/upload-product`, productData, {
+    const response = await axios.post(`https://8080-majeduldev-fullstackeco-emaatv5g85b.ws-us118.gitpod.io/api/product/upload-product`, productData, {
       withCredentials: true,
       headers: {
         "Content-Type": "application/json",
@@ -64,7 +64,7 @@ export const createNewProduct =  async (productData, accessToken) => {
 
 export const updateProduct =  async (productData, productId, accessToken) => {
   try {
-    const response = await axios.patch(`${process.env.BACKEND_URL}/api/product/update-product/${productId}`, productData, {
+    const response = await axios.patch(`https://8080-majeduldev-fullstackeco-emaatv5g85b.ws-us118.gitpod.io/api/product/update-product/${productId}`, productData, {
       withCredentials: true,
       headers: {
         "Content-Type": "application/json",
