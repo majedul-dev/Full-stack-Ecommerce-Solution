@@ -23,22 +23,8 @@ async function getAllProducts(searchParamsPromise) {
   }
 }
 
-async function getAllCategories() {
-  try {
-    const res = await axios.get(`${process.env.BACKEND_URL}/api/category-individual`);
-
-    return res.data;
-  } catch (error) {
-    console.error("Error fetching categories:", error);
-    throw new Error(error.message);
-  }
-  
-}
-
 export default async function ProductsPage({ searchParams }) {
   const { data: products, pagination } = await getAllProducts(searchParams);
-  const { data: categories } = await getAllCategories();
-  // console.log(categories)
   return (
     <div>
       <PageHeader title="Products Management" actionHref="/products/new" actionText="New Product" Icon={PlusIcon}/>
