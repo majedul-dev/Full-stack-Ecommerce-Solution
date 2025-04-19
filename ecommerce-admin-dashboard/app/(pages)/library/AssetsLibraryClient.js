@@ -3,8 +3,6 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { CldImage } from 'next-cloudinary';
 import {
-  MagnifyingGlassIcon,
-  ArrowUpTrayIcon,
   FilmIcon,
   PhotoIcon,
   TrashIcon,
@@ -13,8 +11,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useRouter, usePathname } from 'next/navigation';
 import { deleteAssets, uploadAsset, getAssets } from '@/lib/assets';
-import ImageUploadWithMetadata from '../../../components/ImageUploadWithMetadata';
-import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 const AssetsLibraryClient = ({ 
   initialAssets, 
@@ -138,10 +135,9 @@ const AssetsLibraryClient = ({
       {/* Pagination */}
       {pagination.next_cursor && (
         <div className="flex justify-center mt-6">
-          <button
+          <Button
             onClick={loadMore}
             disabled={isLoadingMore}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed"
           >
             {isLoadingMore ? (
               <>
@@ -151,7 +147,7 @@ const AssetsLibraryClient = ({
             ) : (
               'Load More'
             )}
-          </button>
+          </Button>
         </div>
       )}
 
@@ -245,20 +241,20 @@ const AssetModal = ({ asset, onClose }) => (
             height={asset.height}
             src={asset.public_id}
             alt="Full size preview"
-            className="object-contain h-[70vh] w-full"
+            className="object-contain h-[80vh] w-full"
           />
         ) : (
           <video 
             controls 
             autoPlay
-            className="max-h-[70vh] w-auto mx-auto"
+            className="max-h-[80vh] w-auto mx-auto"
           >
             <source src={asset.secure_url} type="video/mp4" />
           </video>
         )}
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm p-4 border-t">
+      {/* <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm p-4 border-t">
         <div className="grid grid-cols-3 gap-4 text-sm">
           <div>
             <p className="text-gray-500">Type</p>
@@ -273,7 +269,7 @@ const AssetModal = ({ asset, onClose }) => (
             <p>{Math.round(asset.bytes / 1024)}KB</p>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   </div>
 );
