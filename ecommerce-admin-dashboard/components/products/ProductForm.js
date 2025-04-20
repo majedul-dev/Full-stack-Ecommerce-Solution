@@ -5,7 +5,6 @@ import {
     TrashIcon,
     PlusIcon,
 } from "@heroicons/react/24/outline";
-import { useSession } from "next-auth/react";
 import SideNavigation from "./SideNavigation";
 import ProductCreateUpdateHeader from "./ProductCreateUpdateHeader";
 import uploadImage from "@/lib/utils/uploadImage";
@@ -55,7 +54,7 @@ const ProductForm = ({product, isEditPage, productId}) => {
   useEffect(() => {
     async function getAllCategories() {
       try {
-        const res = await axios.get(`https://8080-majeduldev-fullstackeco-emaatv5g85b.ws-us118.gitpod.io/api/category-individual`);
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/category-individual`);
         
         setCategories(res.data.data)
       } catch (error) {

@@ -4,24 +4,32 @@ import { useEffect, useState } from 'react';
 import CategoryForm from '@/components/CategoryForm';
 
 export default function EditCategoryPage() {
-  const { id } = useParams(); // Get the ID from URL params
+  const { id } = useParams();
   const [categoryData, setCategoryData] = useState(null);
+  const [allCategories, setAllCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchCategory() {
+    async function fetchData() {
       try {
-        const res = await fetch(`https://8080-mazedul956-ecommercesol-vh0txgc5lvq.ws-us118.gitpod.io/api/category/${id}`);
-        const { data } = await res.json();
-        setCategoryData(data);
+        // Fetch the specific category
+        const categoryRes = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/category/${id}`);
+        const { data: category } = await categoryRes.json();
+        
+        // Fetch all categories for the parent dropdown
+        const allRes = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/category`);
+        const { data: allCategories } = await allRes.json();
+        
+        setCategoryData(category);
+        setAllCategories(allCategories);
       } catch (error) {
-        console.error('Failed to fetch category:', error);
+        console.error('Failed to fetch data:', error);
       } finally {
         setLoading(false);
       }
     }
 
-    if (id) fetchCategory();
+    if (id) fetchData();
   }, [id]);
 
   if (loading) return <p>Loading...</p>;
@@ -30,7 +38,10 @@ export default function EditCategoryPage() {
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-sm">
       <h1 className="text-2xl font-semibold mb-6">Edit Category</h1>
-      <CategoryForm initialData={categoryData} />
+      <CategoryForm 
+        initialData={categoryData}
+        allCategories={allCategories.filter(c => c._id !== id)} // Exclude current category from parent options
+      />
     </div>
   );
 }

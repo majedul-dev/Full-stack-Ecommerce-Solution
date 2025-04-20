@@ -3,7 +3,7 @@ const productModel = require("../../models/productModel");
 const getProductController = async (req, res) => {
     try {
         // Extract pagination and filter parameters from the request
-        const { page = 1, limit = 5, category, minPrice, maxPrice, sortBy = 'createdAt', sortOrder = -1, search, startDate,
+        const { page = 1, limit = 20, category, minPrice, maxPrice, sortBy = 'createdAt', sortOrder = -1, search, startDate,
             endDate } = req.query;
 
         // Build the filter object dynamically based on query parameters

@@ -99,7 +99,7 @@ export default function ImageUploadWithMetadata() {
         description: metadata.description,
       };
 
-      const response = await fetch(`https://8080-majeduldev-fullstackeco-emaatv5g85b.ws-us118.gitpod.io/api/assets/metadata`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/assets/metadata`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

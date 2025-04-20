@@ -2,7 +2,7 @@ const Category = require('../../models/categoryModel');
 
 const getAllCategoriesByAdmin = async (req, res) => {
   try {
-    const { search, isActive, sortBy, sortOrder, page = 1, limit = 10 } = req.query;
+    const { search, isActive, sortBy, sortOrder, page = 1, limit = 20 } = req.query;
 
     const query = {isDeleted: false};
     if (isActive !== undefined) {

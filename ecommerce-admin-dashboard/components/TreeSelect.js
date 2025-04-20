@@ -12,8 +12,8 @@ export function TreeSelect({ options, onChange, value }) {
     const map = new Map();
     const roots = [];
 
-    items.forEach((item) => map.set(item._id, { ...item, children: [] }));
-    items.forEach((item) => {
+    items?.forEach((item) => map.set(item._id, { ...item, children: [] }));
+    items?.forEach((item) => {
       if (item.path) {
         const parentId = item.path.split('/').pop();
         const parent = map.get(parentId);
@@ -42,7 +42,7 @@ export function TreeSelect({ options, onChange, value }) {
   };
 
   const renderOptions = (items) =>
-    items.map((item) => (
+    items?.map((item) => (
       <div key={item._id}>
         <div
           className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded cursor-pointer"
@@ -76,7 +76,7 @@ export function TreeSelect({ options, onChange, value }) {
     ));
 
   const treeData = buildTree(options);
-  const selectedCategory = options.find((c) => c._id === value);
+  const selectedCategory = options?.find((c) => c._id === value);
 
   return (
     <div>

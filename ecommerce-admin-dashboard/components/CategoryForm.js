@@ -1,147 +1,126 @@
 'use client';
-import { useForm } from 'react-hook-form';
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
+import { useState } from 'react';
 import { TreeSelect } from '@/components/TreeSelect';
-import { FileUpload } from '@/components/FileUpload';
-import { createCategory, updateCategory } from '@/lib/categoryAction';
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { Button } from './ui/button';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';
 
-export default function CategoryForm({ initialData = null }) {
-  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
-    defaultValues: initialData || { name: '', slug: '', description: '', parent: null, isActive: true, image: '' },
+export default function CategoryForm({ initialData = null, allCategories }) {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    name: initialData?.name || '',
+    slug: initialData?.slug || '',
+    parent: initialData?.parent?._id || null,
+    isActive: initialData?.isActive || true
   });
-  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const { data: session } = useSession();
-  const router = useRouter();
 
-  useEffect(() => {
-    async function getCategories() {
-      try {
-        const res = await fetch(`${process.env.BACKEND_URL}/api/category/parent`);
-        const { data } = await res.json();
-        setCategories(data);
-      } catch (error) {
-        console.error("Failed to fetch categories:", error);
-      }
-    }
-    getCategories();
-  }, []);
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
 
-  // Auto-generate slug from name
-  const name = watch('name');
-  useEffect(() => {
-    if (name) {
-      const generatedSlug = name.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '-').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
-      setValue('slug', generatedSlug);
-    }
-  }, [name, setValue]);
+  const handleParentChange = (parentId) => {
+    setFormData(prev => ({
+      ...prev,
+      parent: parentId
+    }));
+  };
 
-  const onSubmit = async (data, event) => {
-    event?.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setLoading(true);
-    const formData = { ...data, parent: data.parent || null };
-    let result;
-    if (initialData) {
-      result = await updateCategory(initialData._id, formData, session?.accessToken);
-    } else {
-      result = await createCategory(formData, session?.accessToken);
+
+    try {
+      const url = initialData 
+        ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/category/${initialData._id}`
+        : `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/category`;
+
+      const method = initialData ? 'PATCH' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.accessToken}`,
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || (initialData ? 'Failed to update category' : 'Failed to create category'));
+      }
+
+      toast.success(initialData ? 'Category updated successfully!' : 'Category created successfully!');
+      router.push('/categories');
+      router.refresh(); // Refresh to show updated data
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
-    if (result.success) {
-      router.push("/categories");
-    }
-    setLoading(false);
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-sm">
-      <h1 className="text-2xl font-semibold mb-6">{initialData ? 'Edit' : 'Create'} Category</h1>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <Label htmlFor="name">Category Name *</Label>
-            <Input id="name" {...register('name', { required: true })} className="mt-2" />
-            {errors.name && <p className="text-red-500 text-sm mt-1">Name is required</p>}
-          </div>
-
-          <div>
-            <Label htmlFor="slug">Slug *</Label>
-            <Input id="slug" {...register('slug', { required: true })} className="mt-2" readOnly />
-          </div>
-        </div>
-
+    <form onSubmit={handleSubmit}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
-          <Label>Parent Category</Label>
-          <TreeSelect
-            options={categories}
-            onChange={(selectedCategoryId) => setValue('parent', selectedCategoryId, { shouldValidate: false })}
-            value={watch('parent')}
-            selectedLabel={(id) => categories.find((cat) => cat._id === id)?.name || 'Root Category'}
-            className="mt-2"
+          <label className="block text-sm font-medium mb-1">Category Name *</label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+            required
           />
-          {watch('parent') && (
-            <div className="text-sm text-gray-500 mt-1">
-              Selected path: {getCategoryPath(categories, watch('parent'))}
-            </div>
-          )}
         </div>
-
         <div>
-          <Label htmlFor="description">Description</Label>
-          <Textarea id="description" {...register('description')} className="mt-2" maxLength={500} />
-          <div className="text-sm text-gray-500 mt-1">{watch('description')?.length || 0}/500 characters</div>
+          <label className="block text-sm font-medium mb-1">Slug *</label>
+          <input
+            type="text"
+            name="slug"
+            value={formData.slug}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+            required
+          />
         </div>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <Label>Status</Label>
-            <div className="flex items-center space-x-2 mt-2">
-              <Switch
-                id="isActive"
-                checked={watch('isActive') ?? true}
-                onCheckedChange={(value) => setValue('isActive', value)}
-              />
-              <Label htmlFor="isActive">{watch('isActive') ? 'Active' : 'Inactive'}</Label>
-            </div>
-          </div>
+      <div className="mb-6">
+        <label className="block text-sm font-medium mb-1">Parent Category</label>
+        <TreeSelect
+          options={allCategories}
+          onChange={handleParentChange}
+          value={formData.parent}
+        />
+      </div>
 
-          <div>
-            <Label>Category Image</Label>
-            <FileUpload onFileUpload={(url) => setValue('image', url)} className="mt-2" />
-          </div>
-        </div>
+      <div className="mb-6">
+        <label className="flex items-center">
+          <input
+            type="checkbox"
+            name="isActive"
+            checked={formData.isActive}
+            onChange={handleChange}
+            className="mr-2"
+          />
+          Active Category
+        </label>
+      </div>
 
-        <div className="border-t pt-6">
-          <Button type="submit" className="w-full md:w-auto" disabled={loading}>
-            {loading ? 'Saving...' : initialData ? 'Update Category' : 'Create Category'}
-          </Button>
-        </div>
-      </form>
-    </div>
+      <Button type="submit" className="w-full md:w-auto" disabled={loading}>
+        {loading ? 'Saving...' : initialData ? 'Update Category' : 'Create Category'}
+      </Button>
+    </form>
   );
 }
-
-// Helper function to get full category path
-const getCategoryPath = (categories, id) => {
-  const categoryMap = new Map(categories.map((cat) => [cat._id, cat]));
-  const path = [];
-  let current = categoryMap.get(id);
-
-  while (current) {
-    path.unshift(current.name);
-    if (current.path) {
-      const parentId = current.path.split('/').pop();
-      current = categoryMap.get(parentId);
-    } else {
-      current = null;
-    }
-  }
-
-  return path.join(' → ') || 'Root';
-};
