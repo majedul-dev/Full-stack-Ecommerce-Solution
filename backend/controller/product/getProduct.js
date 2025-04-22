@@ -3,13 +3,14 @@ const productModel = require("../../models/productModel");
 const getProductController = async (req, res) => {
     try {
         const { page = 1, limit = 20, category, minPrice, maxPrice, sortBy = 'createdAt', sortOrder = -1, search, startDate,
-            endDate } = req.query;
+            endDate, stockStatus } = req.query;
+
+        // await productModel.updateAllStockStatuses();
 
         let filter = {};
-
         if (search) {
             filter.$or = [
-                { name: { $regex: search, $options: 'i' } },
+                { productName: { $regex: search, $options: 'i' } },
                 { description: { $regex: search, $options: 'i' } },
                 { category: { $regex: search, $options: 'i' } },
                 { sku: { $regex: search, $options: 'i' } },
@@ -26,6 +27,19 @@ const getProductController = async (req, res) => {
             filter.price = {};
             if (minPrice) filter.price.$gte = minPrice;
             if (maxPrice) filter.price.$lte = maxPrice;
+        }
+
+        if (stockStatus) {
+            const validStatuses = ['in-stock', 'low-stock', 'out-of-stock'];
+            if (validStatuses.includes(stockStatus)) {
+                filter.stockStatus = stockStatus;
+            } else {
+                return res.status(400).json({
+                    message: "Invalid stockStatus value. Must be one of: in-stock, low-stock, out-of-stock",
+                    error: true,
+                    success: false
+                });
+            }
         }
 
         if (startDate && endDate) {

@@ -11,7 +11,6 @@ const getAllAssets = async (req, res) => {
   try {
     const { next_cursor, search, resource_type, format, tags } = req.query;
 
-    // Step 1: MongoDB search filter
     let mongoFilter = {};
     if (search) {
       mongoFilter.$or = [
@@ -21,18 +20,15 @@ const getAllAssets = async (req, res) => {
       ];
     }
 
-    // Step 2: Get matching public_ids from MongoDB
     const mongoAssets = await Asset.find(mongoFilter).lean();
     const mongoPublicIds = mongoAssets.map(asset => asset.public_id);
 
-    // Step 3: Cloudinary filter options
     const cloudinaryOptions = {
       type: 'upload',
       max_results: 30,
       next_cursor: next_cursor || undefined
     };
 
-    // Apply MongoDB public_ids filter if searching
     if (search) {
       cloudinaryOptions.public_ids = mongoPublicIds;
       if (mongoPublicIds.length === 0) {
@@ -47,15 +43,12 @@ const getAllAssets = async (req, res) => {
       }
     }
 
-    // Add Cloudinary resource filters
     if (resource_type) cloudinaryOptions.resource_type = resource_type;
     if (format) cloudinaryOptions.format = format;
     if (tags) cloudinaryOptions.tags = tags;
 
-    // Step 4: Fetch from Cloudinary with combined filters
     const cloudinaryResult = await cloudinary.api.resources(cloudinaryOptions);
 
-    // Step 5: Combine data with MongoDB metadata
     const combinedResources = cloudinaryResult.resources.map(resource => {
       const metadata = mongoAssets.find(a => a.public_id === resource.public_id) || {};
       return {
@@ -83,54 +76,7 @@ const getAllAssets = async (req, res) => {
   }
 };
 
-// const getAllAssets = async (req, res) => {
-//   try {
-//     const { next_cursor, search } = req.query;
-    
-//     // First get Cloudinary assets
-//     const cloudinaryResult = await cloudinary.api.resources({
-//       type: 'upload',
-//       prefix: search,
-//       max_results: 30,
-//       next_cursor: next_cursor || undefined
-//     });
 
-//     // Get public_ids to fetch metadata from MongoDB
-//     const publicIds = cloudinaryResult.resources.map(res => res.public_id);
-    
-//     // Get metadata from MongoDB
-//     const mongoAssets = await Asset.find({ 
-//       public_id: { $in: publicIds } 
-//     }).lean();
-
-//     // Combine Cloudinary and MongoDB data
-//     const combinedResources = cloudinaryResult.resources.map(resource => {
-//       const metadata = mongoAssets.find(a => a.public_id === resource.public_id) || {};
-//       return {
-//         ...resource,
-//         title: metadata.title || '',
-//         description: metadata.description || ''
-//       };
-//     });
-
-//     res.json({
-//       success: true,
-//       data: {
-//         resources: combinedResources,
-//         next_cursor: cloudinaryResult.next_cursor,
-//         total_count: cloudinaryResult.total_count
-//       }
-//     });
-//   } catch (error) {
-//     console.error('Error fetching assets:', error);
-//     res.status(500).json({
-//       success: false,
-//       message: error.message || 'Failed to fetch assets'
-//     });
-//   }
-// };
-
-// Create or update asset metadata
 const createOrUpdateAsset = async (req, res) => {
   try {
     const { public_id, title, description } = req.body;
@@ -142,10 +88,8 @@ const createOrUpdateAsset = async (req, res) => {
       });
     }
 
-    // Get the asset from Cloudinary to ensure it exists
     const resource = await cloudinary.api.resource(public_id);
     
-    // Upsert the metadata
     const asset = await Asset.findOneAndUpdate(
       { public_id },
       { 
@@ -175,7 +119,6 @@ const createOrUpdateAsset = async (req, res) => {
   }
 };
 
-// Delete assets from both Cloudinary and MongoDB
 const deleteAssets = async (req, res) => {
   try {
     const { public_ids } = req.body;
@@ -187,10 +130,8 @@ const deleteAssets = async (req, res) => {
       });
     }
 
-    // Delete from Cloudinary
     const cloudinaryResult = await cloudinary.api.delete_resources(public_ids);
     
-    // Delete from MongoDB
     await Asset.deleteMany({ public_id: { $in: public_ids } });
 
     res.json({

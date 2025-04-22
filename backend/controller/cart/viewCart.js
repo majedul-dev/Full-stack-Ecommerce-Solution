@@ -1,15 +1,14 @@
-const cartModel = require("../../models/cartModel"); // Path to your Cart model
-const productModel = require("../../models/productModel"); // Path to your Product model
+const cartModel = require("../../models/cartModel");
+const productModel = require("../../models/productModel");
 
 async function viewCartController(req, res) {
   try {
-    const userId = req.userId; // Assume the user ID is extracted from the auth middleware
+    const userId = req.userId;
 
-    // Find the user's cart
     const cart = await cartModel.findOne({ userId, isActive: true }).populate({
       path: "items.productId",
-      model: "Product", // Reference your Product model
-      select: "productName price sellingPrice stock productImage", // Select only relevant fields
+      model: "Product",
+      select: "productName price sellingPrice stock productImage",
     });
 
     if (!cart) {
@@ -20,7 +19,6 @@ async function viewCartController(req, res) {
       });
     }
 
-    // Format the response to include product details
     const cartDetails = {
       cartId: cart._id,
       userId: cart.userId,

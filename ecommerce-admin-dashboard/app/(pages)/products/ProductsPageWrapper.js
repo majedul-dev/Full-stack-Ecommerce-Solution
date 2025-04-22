@@ -2,13 +2,14 @@
 import React, { useState } from 'react'
 import Pagination from '@/components/Pagination';
 import DeleteModal from '@/components/DeleteModal';
-import ProductsTable from './ProductsTable';
+import DataTable from '@/components/DataTable';
+import { productColumns } from './_config/productColumns';
+import { productActions } from './_config/productActions';
 
 const ProductsPageWrapper = ({ products, pagination, currentPage}) => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedProducts, setSelectedProducts] = useState([]);
 
-    // Handle category selection
   const toggleSelectProduct = (productId) => {
     setSelectedProducts((prev) =>
       prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]
@@ -23,24 +24,25 @@ const ProductsPageWrapper = ({ products, pagination, currentPage}) => {
     }
   };
   
-
-  // Handle delete confirmation
   const handleDeleteProducts = () => {
-    console.log('Deleting Products:', selectedProducts);
-    // Add actual delete logic here
     setSelectedProducts([]);
     setIsDeleteModalOpen(false);
   };
 
+  const onDeleteClick = () => setIsDeleteModalOpen(true)
+
   return (
     <div>
-        <ProductsTable 
-          products={products}
-          selectedProducts={selectedProducts} 
-          toggleSelectProduct={toggleSelectProduct}
-          toggleSelectAll={toggleSelectAll}
-          onDeleteClick={() => setIsDeleteModalOpen(true)}
-        />
+      <DataTable
+      data={products}
+      columns={productColumns}
+      actions={productActions(toggleSelectProduct, onDeleteClick)}
+      hasSelection
+      isAllSelected={products?.length > 0 && selectedProducts.length === products.length}
+      onSelectAll={toggleSelectAll}
+      selectedIds={selectedProducts}
+      onSelectItem={toggleSelectProduct}
+    />
         <Pagination currentPage={currentPage} totalPages={pagination.totalPages} />
         <DeleteModal
             isOpen={isDeleteModalOpen}

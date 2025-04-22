@@ -3,10 +3,9 @@ const productModel = require("../../models/productModel");
 
 async function deleteCartProductController(req, res) {
   try {
-    const userId = req.userId; // Extract user ID from auth middleware
-    const { productId } = req.params; // Product ID to be removed from the cart
+    const userId = req.userId;
+    const { productId } = req.params;
 
-    // Find the user's active cart
     const cart = await cartModel.findOne({ userId, isActive: true });
     if (!cart) {
       return res.status(404).json({
@@ -16,7 +15,6 @@ async function deleteCartProductController(req, res) {
       });
     }
 
-    // Find the product in the cart
     const itemIndex = cart.items.findIndex(
       (item) => item.productId.toString() === productId
     );
@@ -29,10 +27,8 @@ async function deleteCartProductController(req, res) {
       });
     }
 
-    // Remove the product from the cart
     cart.items.splice(itemIndex, 1);
 
-    // Update the cart
     await cart.save();
 
     res.status(200).json({

@@ -164,22 +164,22 @@ export default function Filters({ entity, filterOptions, existingFilters }) {
           )}
 
           {type === "select" && (
-            <Select
-              value={filters[key]}
-              onValueChange={(value) => handleFilterChange(key, value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={placeholder} />
-              </SelectTrigger>
-              <SelectContent>
-                {options?.map((option) => {
-                  return(
-                  <SelectItem key={option.value} value={option.label}>
-                    {option.label}
-                  </SelectItem>
-                )})}
-              </SelectContent>
-            </Select>
+            <select
+            value={filters[key] || ""}
+            onChange={(e) => handleFilterChange(key, e.target.value)}
+            className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+          >
+            <option value="">{placeholder}</option>
+            {options.map((option, index) => (
+              <option 
+                key={index} 
+                value={option.value || ""}
+                className="dark:bg-gray-800 dark:text-white"
+              >
+                {option.label}
+              </option>
+            ))}
+          </select>
           )}
 
           {type === "number" && (

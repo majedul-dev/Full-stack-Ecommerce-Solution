@@ -47,6 +47,11 @@ const productSchema = new mongoose.Schema(
         min: [0, 'Stock cannot be negative'],
         default: 0,
     },
+    stockStatus: {
+      type: String,
+      enum: ['in-stock', 'low-stock', 'out-of-stock'],
+      default: 'out-of-stock'
+    },
     sku: {
       type: String,
       required: [true, 'SKU is required'],
@@ -88,6 +93,34 @@ const productSchema = new mongoose.Schema(
       timestamps: true,
     }
   );
+
+// Middleware to update stockStatus before saving
+productSchema.pre('save', function(next) {
+  if (this.stock <= 0) {
+    this.stockStatus = 'out-of-stock';
+  } else if (this.stock < 10) {
+    this.stockStatus = 'low-stock';
+  } else {
+    this.stockStatus = 'in-stock';
+  }
+  next();
+});
+
+// Static method to update stockStatus for all products
+productSchema.statics.updateAllStockStatuses = async function() {
+  await this.updateMany(
+    { stock: { $lte: 0 } },
+    { $set: { stockStatus: 'out-of-stock' } }
+  );
+  await this.updateMany(
+    { stock: { $gt: 0, $lt: 10 } },
+    { $set: { stockStatus: 'low-stock' } }
+  );
+  await this.updateMany(
+    { stock: { $gte: 10 } },
+    { $set: { stockStatus: 'in-stock' } }
+  );
+};
   
 const productModel = mongoose.model("Product",productSchema)
 

@@ -3,10 +3,9 @@ const Product = require('../../models/productModel');
 
 const addToCart = async (req, res) => {
   try {
-    const userId = req.userId; // Assuming you have `userId` from authentication middleware
+    const userId = req.userId;
     const { productId, quantity } = req.body;
 
-    // Validate input
     if (!productId || !quantity || quantity < 1) {
       return res.status(400).json({
         message: 'Invalid product or quantity',
@@ -15,7 +14,6 @@ const addToCart = async (req, res) => {
       });
     }
 
-    // Find the product to add
     const product = await Product.findById(productId);
     if (!product) {
       return res.status(404).json({
@@ -25,7 +23,6 @@ const addToCart = async (req, res) => {
       });
     }
 
-    // Check if the quantity exceeds the available stock
     if (quantity > product.stock) {
       return res.status(400).json({
         message: `Only ${product.stock} units available in stock`,
@@ -34,7 +31,6 @@ const addToCart = async (req, res) => {
       });
     }
 
-    // Find the user's cart or create a new one
     let cart = await Cart.findOne({ userId, isActive: true });
     if (!cart) {
       cart = new Cart({ userId, items: [] });
@@ -45,12 +41,10 @@ const addToCart = async (req, res) => {
       );
       
       if (existingItemIndex >= 0) {
-        // Update existing item's quantity
         cart.items[existingItemIndex].quantity += quantity;
         cart.items[existingItemIndex].subtotal =
           cart.items[existingItemIndex].quantity * product.sellingPrice;
       } else {
-        // Add a new item
         cart.items.push({
           productId,
           quantity,
@@ -58,8 +52,6 @@ const addToCart = async (req, res) => {
         });
       }
       
-
-    // Save the cart
     await cart.save();
 
     return res.status(200).json({
