@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation"; 
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { createNewProduct, updateProduct } from "@/lib/productAction";
+import { createNewProduct, updateProduct } from "@/actions/productAction";
 import { useSession } from "next-auth/react";
 
 const ProductCreateUpdateHeader = ({ productData, validateForm, isEditPage, productId}) => {

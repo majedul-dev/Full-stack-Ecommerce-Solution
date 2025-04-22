@@ -1,14 +1,14 @@
-// app/categories/CategoriesPageWrapper.js
 'use client';
 import { useState } from 'react';
-import CategoriesTable from './CategoriesTable';
-// import BulkActions from './BulkActions';
 import Pagination from '../../../components/Pagination';
 import DeleteModal from '@/components/DeleteModal';
-import { deleteCategory } from '@/lib/categoryAction';
+import { deleteCategory } from '@/actions/categoryAction';
 import { useSession } from "next-auth/react";
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
+import { categoryActions } from './_config/categoryActions';
+import { categoryColumns } from './_config/categoryColumns';
+import DataTable from '@/components/DataTable';
 
 export default function CategoriesPageWrapper({ categories, pagination, currentPage }) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -52,15 +52,17 @@ export default function CategoriesPageWrapper({ categories, pagination, currentP
 
   return (
     <div>
-      <CategoriesTable
-        categories={categories}
-        selectedCategories={selectedCategories}
-        toggleSelectCategory={toggleSelectCategory}
-        toggleSelectAll={toggleSelectAll}
-        onDeleteClick={() => setIsDeleteModalOpen(true)}
-      />
+      <DataTable
+      data={categories}
+      columns={categoryColumns}
+      actions={categoryActions(toggleSelectCategory)}
+      hasSelection
+      isAllSelected={categories?.length > 0 && selectedCategories.length === categories.length}
+      onSelectAll={toggleSelectAll}
+      selectedIds={selectedCategories}
+      onSelectItem={toggleSelectCategory}
+    />
       <Pagination currentPage={currentPage} totalPages={pagination.totalPages} />
-      {/* <BulkActions selectedCount={selectedCategories.length} actions={[]} /> */}
       <DeleteModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}

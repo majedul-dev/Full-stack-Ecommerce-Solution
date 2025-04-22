@@ -1,4 +1,4 @@
-import { getProductDetails } from "@/lib/productAction";
+import { getProductDetails } from "@/actions/productAction";
 import ProductForm from "@/components/products/ProductForm";
 
 export default async function EditProduct({params}) {

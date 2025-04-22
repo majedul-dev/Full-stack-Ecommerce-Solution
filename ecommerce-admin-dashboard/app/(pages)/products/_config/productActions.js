@@ -5,7 +5,8 @@ export const productActions = (toggleSelect, onDelete, router) => [
       key: 'edit',
       icon: PencilSquareIcon,
       href: (item) => `/products/edit/${item._id}`,
-      iconClassName: 'text-blue-600'
+      iconClassName: 'text-blue-600',
+      label: 'Edit product',
     },
     {
       key: 'delete',
@@ -14,6 +15,7 @@ export const productActions = (toggleSelect, onDelete, router) => [
         toggleSelect(itemId);
         onDelete();
       },
-      iconClassName: 'text-red-500'
+      iconClassName: 'text-red-500',
+      label: 'Delete product',
     }
   ];

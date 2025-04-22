@@ -5,7 +5,8 @@ export const categoryActions = (toggleSelect, onDelete) => [
         key: 'edit',
         icon: PencilSquareIcon,
         href: (category) => `/categories/edit/${category._id}`,
-        iconClassName: 'text-blue-600'
+        iconClassName: 'text-blue-600',
+        label: 'Edit category',
       },
       {
         key: 'delete',
@@ -14,6 +15,7 @@ export const categoryActions = (toggleSelect, onDelete) => [
             toggleSelect(categoryId);
             onDelete();
         },
-        iconClassName: 'text-red-500'
+        iconClassName: 'text-red-500',
+        label: 'Delete category',
       },
   ];
