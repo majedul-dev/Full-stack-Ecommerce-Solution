@@ -2,11 +2,9 @@ const productModel = require("../../models/productModel");
 
 const getProductController = async (req, res) => {
     try {
-        // Extract pagination and filter parameters from the request
         const { page = 1, limit = 20, category, minPrice, maxPrice, sortBy = 'createdAt', sortOrder = -1, search, startDate,
             endDate } = req.query;
 
-        // Build the filter object dynamically based on query parameters
         let filter = {};
 
         if (search) {
@@ -30,11 +28,10 @@ const getProductController = async (req, res) => {
             if (maxPrice) filter.price.$lte = maxPrice;
         }
 
-        // Add date range filter if startDate and endDate are provided
         if (startDate && endDate) {
             filter.createdAt = {
-                $gte: new Date(startDate), // Greater than or equal to startDate
-                $lte: new Date(endDate)  // Less than or equal to endDate
+                $gte: new Date(startDate),
+                $lte: new Date(endDate)
             };
         } else if (startDate) {
             filter.createdAt = { $gte: new Date(startDate) };
@@ -42,31 +39,26 @@ const getProductController = async (req, res) => {
             filter.createdAt = { $lte: new Date(endDate) };
         }
 
-        // Set up pagination and sorting
         const skip = (page - 1) * limit;
         const sort = { [sortBy]: parseInt(sortOrder) };
 
-        // Fetch the products from the database with filters, pagination, and sorting
         const products = await productModel
             .find(filter)
             .skip(skip)
             .limit(parseInt(limit))
             .sort(sort);
 
-        // Get the total number of products to calculate the total pages
         const totalProducts = await productModel.countDocuments(filter);
 
-        // Calculate the total pages for pagination
         const totalPages = Math.ceil(totalProducts / limit);
 
-        // Return the response with the products and pagination info
         res.status(200).json({
             message: "Products fetched successfully",
             success: true,
             error: false,
             data: products,
             pagination: {
-                page,
+                page: Number(page),
                 totalPages,
                 totalProducts,
                 limit: parseInt(limit)

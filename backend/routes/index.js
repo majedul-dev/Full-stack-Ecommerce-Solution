@@ -9,6 +9,7 @@ const { addToCart, viewCart, deleteCartProduct } = require('../controller/cart')
 const {allUsers, updateUser, userDetails, getUserDetailsById, logoutUser, userSignIn, userSignUp} = require("../controller/user")
 const { getAllAssets,createOrUpdateAsset, deleteAssets } = require('../controller/assets/assetsController')
 const {createCategory, getAllCategoriesByAdmin, updateCategory, deleteCategory, getParentCategories, getCategoryById, getIndividualCategory} = require("../controller/category")
+const isAdmin = require('../middleware/isAdmin')
 
 // users routes
 router.post("/signup",userSignUp)
@@ -38,10 +39,10 @@ router.delete("/cart/delete-cart-product/:productId", authToken, deleteCartProdu
 
 //order routes
 router.post("/order/create-order",authToken, createOrder)
-router.delete("/order/delete-order/:orderId",authToken, deleteOrder)
-router.patch("/order/update-order-status/:orderId",authToken, updateOrderStatus)
+router.delete("/order/delete-order/:orderId",authToken, isAdmin, deleteOrder)
+router.patch("/order/update-order-status/:orderId",authToken, isAdmin, updateOrderStatus)
 router.get("/order/orderbyid/:orderId",authToken, getOrderById)
-router.get("/order/allordersbyadmin",authToken, getOrdersByAdmin)
+router.get("/order/allordersbyadmin",authToken, isAdmin, getOrdersByAdmin)
 router.get("/order/allordersbyuser",authToken, getOrdersByUser)
 
 // cloudinary assets
@@ -50,13 +51,13 @@ router.post("/assets/metadata", createOrUpdateAsset)
 router.delete("/assets", deleteAssets)
 
 // category routes
-router.post("/category", authToken, createCategory);
+router.post("/category", authToken, isAdmin, createCategory);
 router.get("/category", getAllCategoriesByAdmin);
 router.get("/category-individual", getIndividualCategory);
 router.get("/category/parent", getParentCategories);
 router.get("/category/:id", getCategoryById);
-router.patch("/category/:id", authToken, updateCategory);
-router.delete("/category/:id", authToken, deleteCategory);
+router.patch("/category/:id", authToken, isAdmin, updateCategory);
+router.delete("/category/:id", authToken, isAdmin, deleteCategory);
 
 
 

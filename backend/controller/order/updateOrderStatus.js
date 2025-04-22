@@ -4,14 +4,13 @@ const UserModel = require("../../models/userModel");
 // Update order status (for users and admins)
 const updateOrderStatus = async (req, res) => {
   try {
-    const { orderId } = req.params; // Extract the order ID from the request parameters
-    const { status } = req.body; // Extract the new status from the request body
-    const userId = req.userId; // Assuming the authenticated user's ID is available
+    const { orderId } = req.params;
+    const { status } = req.body;
+    const userId = req.userId;
 
     const user = await UserModel.findById(userId)
     
     console.log( req.userId)
-    // Validate the new status
     const validStatuses = ["pending", "confirmed", "shipped", "delivered", "canceled"];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({
@@ -21,7 +20,6 @@ const updateOrderStatus = async (req, res) => {
       });
     }
 
-    // Find the order by ID
     const order = await Order.findById(orderId);
     if (!order) {
       return res.status(404).json({
@@ -31,8 +29,7 @@ const updateOrderStatus = async (req, res) => {
       });
     }
 
-    // Check if the user is authorized to update the status
-    if (user.role !== "ADMIN" && String(order.user) !== userId) {
+    if (user.role !== "admin" && String(order.user) !== userId) {
       return res.status(403).json({
         message: "You are not authorized to update this order.",
         success: false,
@@ -40,8 +37,7 @@ const updateOrderStatus = async (req, res) => {
       });
     }
 
-    // Admins can update to any status; users can only cancel their orders
-    if (user.role !== "ADMIN" && status !== "Cancelled") {
+    if (user.role !== "admin" && status !== "Cancelled") {
       return res.status(403).json({
         message: "You are only allowed to cancel your orders.",
         success: false,
@@ -49,7 +45,6 @@ const updateOrderStatus = async (req, res) => {
       });
     }
 
-    // Update the order status
     order.status = status;
     const updatedOrder = await order.save();
 

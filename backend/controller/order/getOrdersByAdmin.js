@@ -3,33 +3,29 @@ const Order = require("../../models/orderModel");
 // Get all orders (admin)
 const getAllOrdersByAdmin = async (req, res) => {
   try {
-    const { page = 1, limit = 10, userId, status } = req.query; // Pagination and filtering
+    const { page = 1, limit = 10, userId, status } = req.query;
 
-    // Build the query object
     const query = {};
     if (userId) {
-      query.user = userId; // Filter by user ID if provided
+      query.user = userId;
     }
     if (status) {
-      query.status = status; // Filter by order status if provided
+      query.status = status;
     }
 
-    // Count total orders matching the query
     const totalCount = await Order.countDocuments(query);
 
-    // Fetch orders with pagination, query, and population
     const orders = await Order.find(query)
-      .populate("user", "name email") // Populate user with selected fields
-      .populate("products.productId", "name price") // Populate product with selected fields
+      .populate("user", "name email")
+      .populate("products.productId", "name price")
       .skip((page - 1) * limit)
       .limit(Number(limit))
-      .sort({ createdAt: -1 }); // Sort by most recent orders
+      .sort({ createdAt: -1 });
 
-    // Construct pagination metadata
     const pagination = {
+      page: Number(page),
       totalCount,
       totalPages: Math.ceil(totalCount / limit),
-      currentPage: Number(page),
       perPage: Number(limit),
     };
 
