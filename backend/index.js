@@ -23,12 +23,11 @@ app.use(cookieParser())
 
 app.use("/api",router)
 
-const PORT = 8080;
 
 
 connectDB().then(()=>{
-    app.listen(PORT,()=>{
+    app.listen(process.env.PORT,()=>{
         console.log("connnect to DB")
-        console.log("Server is running "+PORT)
+        console.log("Server is running "+process.env.PORT)
     })
 })
