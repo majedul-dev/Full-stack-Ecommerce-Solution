@@ -5,6 +5,7 @@ import Filters from "@/components/Filters";
 import { customerFilterOptions } from "./_config/customerFilterOptions";
 import { getAllUsers } from "@/actions/customerActions";
 
+export const dynamic = 'force-static';
 
 export default async function CustomerPage({ searchParams }) {
   const cleanParams = {};

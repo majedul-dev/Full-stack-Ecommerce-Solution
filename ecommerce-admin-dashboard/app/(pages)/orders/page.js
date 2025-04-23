@@ -5,6 +5,8 @@ import OrdersPageWrapper from './OrdersPageWrapper';
 import Filters from '@/components/Filters';
 import { filterOptions } from './_config/orderFilterOptions';
 
+export const dynamic = 'force-static';
+
 export default async function ({ searchParams }) {
   const cleanParams = {};
   for (const [key, value] of Object.entries(searchParams)) {
