@@ -10,6 +10,7 @@ const {allUsers, updateUser, userDetails, getUserDetailsById, logoutUser, userSi
 const { getAllAssets,createOrUpdateAsset, deleteAssets } = require('../controller/assets/assetsController')
 const {createCategory, getAllCategoriesByAdmin, updateCategory, deleteCategory, getParentCategories, getCategoryById, getIndividualCategory} = require("../controller/category")
 const isAdmin = require('../middleware/isAdmin')
+const { getDashboardData } = require('../controller/dashboard')
 
 // users routes
 router.post("/signup",userSignUp)
@@ -58,6 +59,9 @@ router.get("/category/parent", getParentCategories);
 router.get("/category/:id", getCategoryById);
 router.patch("/category/:id", authToken, isAdmin, updateCategory);
 router.delete("/category/:id", authToken, isAdmin, deleteCategory);
+
+// dashboard routes
+router.get("/dashboard", getDashboardData)
 
 
 

@@ -8,8 +8,8 @@ export const statusColors = {
   shipped: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-200',
   delivered: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200',
   canceled: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200',
-  refunded: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-200', // Optional
-  processing: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-200', // Optional
+  refunded: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-200', 
+  processing: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-200',
 };
 
 export const orderColumns = [

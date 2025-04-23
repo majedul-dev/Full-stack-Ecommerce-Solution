@@ -46,7 +46,7 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      const apiResponse = await fetch(`https://8080-majeduldev-fullstackeco-emaatv5g85b.ws-us118.gitpod.io/api/userLogout`, {
+      const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/userLogout`, {
         method: 'POST'
       });
       const res = await apiResponse.json();
