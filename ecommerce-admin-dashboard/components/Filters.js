@@ -151,6 +151,21 @@ export default function Filters({ entity, filterOptions, existingFilters }) {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
+  // Helper function to safely parse dates
+  const getSafeDate = (dateString) => {
+    if (!dateString) return undefined;
+    try {
+      // For existing filters that might be in ISO format
+      if (dateString.includes('T')) {
+        return parseISO(dateString);
+      }
+      // For new selections that are already local dates
+      return new Date(dateString);
+    } catch {
+      return undefined;
+    }
+  };
+
   return (
     <Card className="flex flex-wrap gap-4 p-4 mb-4">
       {filterOptions.map(({ key, type, placeholder, options }) => (
@@ -191,7 +206,7 @@ export default function Filters({ entity, filterOptions, existingFilters }) {
             />
           )}
 
-          {type === "date" && (
+{type === "date" && (
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -214,7 +229,7 @@ export default function Filters({ entity, filterOptions, existingFilters }) {
                   </svg>
 
                   {filters[key] ? (
-                    format(new Date(filters[key]), "PPP")
+                    format(getSafeDate(filters[key]) || new Date(), "PPP")
                   ) : (
                     <span className="text-muted-foreground">{placeholder}</span>
                   )}
@@ -223,10 +238,15 @@ export default function Filters({ entity, filterOptions, existingFilters }) {
               <PopoverContent className="w-auto p-0">
                 <Calendar
                   mode="single"
-                  selected={filters[key] ? new Date(filters[key]) : undefined}
-                  onSelect={(date) =>
-                    handleFilterChange(key, date?.toISOString().split('T')[0] || "")
-                  }
+                  selected={getSafeDate(filters[key])}
+                  onSelect={(date) => {
+                    if (!date) return;
+                    // Convert to local date string without timezone information (YYYY-MM-DD)
+                    const localDateString = new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
+                      .toISOString()
+                      .split('T')[0];
+                    handleFilterChange(key, localDateString);
+                  }}
                   initialFocus
                 />
               </PopoverContent>
