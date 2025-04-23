@@ -1,8 +1,6 @@
 import axios from 'axios';
-import { getToken } from "@/lib/auth";
 
-export async function getAllOrders(searchParamsPromise) {
-  const token = await getToken();
+export async function getAllOrders(searchParamsPromise, token) {
   try {
     const searchParams = await searchParamsPromise;
     const query = new URLSearchParams(

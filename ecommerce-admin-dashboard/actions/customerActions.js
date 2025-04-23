@@ -1,8 +1,6 @@
 import axios from "axios";
-import { getToken } from "@/lib/auth";
 
-export async function getAllUsers(searchParamsPromise) {
-  const token = await getToken();
+export async function getAllUsers(searchParamsPromise, token) {
   try {
     const searchParams = await searchParamsPromise;
     const query = new URLSearchParams(
