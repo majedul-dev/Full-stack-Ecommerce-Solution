@@ -48,28 +48,13 @@
 //   );
 // }
 
-
-import axios from 'axios';
 import CategoriesPageWrapper from './CategoriesPageWrapper';
 import Filters from '../../../components/Filters';
 import PageHeader from '@/components/PageHeader';
 import { PlusIcon } from 'lucide-react';
+import { getCategories } from '@/actions/categoryAction';
 
-async function getCategories(searchParams) {
-  try {
-    const query = new URLSearchParams(
-      Object.fromEntries(
-        Object.entries(searchParams).map(([key, value]) => [key, String(value)])
-      )
-    ).toString();
-
-    const res = await axios.get(`${process.env.BACKEND_URL}/api/category?${query}`);
-    return res.data;
-  } catch (error) {
-    console.error("Error fetching categories:", error);
-    throw new Error(error.message);
-  }
-}
+export const dynamic = 'force-static';
 
 export default async function CategoriesPage({ searchParams }) {
   const { data: categories, pagination } = await getCategories(searchParams);
