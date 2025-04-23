@@ -1,6 +1,6 @@
 "use client"
 import Pagination from '@/components/Pagination'
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { orderActions } from './_config/orderActions';
 import DataTable from '@/components/DataTable';
 import { orderColumns } from './_config/orderColumn';
@@ -28,7 +28,7 @@ const OrdersPageWrapper = ({ orders, pagination, currentPage }) => {
     }
   };
   return (
-    <div>
+    <Suspense fallback={<div>Loading products...</div>}>
       <DataTable
       data={orders} columns={orderColumns}
       actions={orderActions(refreshOrders)}
@@ -39,7 +39,7 @@ const OrdersPageWrapper = ({ orders, pagination, currentPage }) => {
       onSelectItem={toggleSelectOrder}
     />
       <Pagination currentPage={currentPage} totalPages={pagination?.totalPages} />
-    </div>
+    </Suspense>
   )
 }
 

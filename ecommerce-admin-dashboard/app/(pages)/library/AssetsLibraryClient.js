@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { CldImage } from 'next-cloudinary';
 import {
@@ -90,82 +90,84 @@ const AssetsLibraryClient = ({
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      {/* Stats and Actions */}
-      <div className="flex justify-between items-center mb-4">
-        <div className="text-sm text-gray-600">
-          {pagination.total} items · {selectedAssets.length} selected
+    <Suspense fallback={<div>Loading products...</div>}>
+      <div className="p-6 max-w-7xl mx-auto">
+        {/* Stats and Actions */}
+        <div className="flex justify-between items-center mb-4">
+          <div className="text-sm text-gray-600">
+            {pagination.total} items · {selectedAssets.length} selected
+          </div>
+          {selectedAssets.length > 0 && (
+            <button
+              onClick={handleDelete}
+              className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200"
+            >
+              <TrashIcon className="h-5 w-5" />
+              <span>Delete Selected</span>
+            </button>
+          )}
         </div>
-        {selectedAssets.length > 0 && (
-          <button
-            onClick={handleDelete}
-            className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200"
-          >
-            <TrashIcon className="h-5 w-5" />
-            <span>Delete Selected</span>
-          </button>
+
+        {/* Asset Grid */}
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <ArrowPathIcon className="h-8 w-8 animate-spin text-gray-400" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            {assets.map((asset, index) => (
+              <AssetCard
+                key={index}
+                asset={asset}
+                selected={selectedAssets.includes(asset.public_id)}
+                onSelect={() => setSelectedAsset(asset)}
+                onToggleSelect={() => {
+                  setSelectedAssets(prev =>
+                    prev.includes(asset.public_id)
+                      ? prev.filter(id => id !== asset.public_id)
+                      : [...prev, asset.public_id]
+                  );
+                }}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {pagination.next_cursor && (
+          <div className="flex justify-center mt-6">
+            <Button
+              onClick={loadMore}
+              disabled={isLoadingMore}
+            >
+              {isLoadingMore ? (
+                <>
+                  <ArrowPathIcon className="h-4 w-4 animate-spin" />
+                  Loading...
+                </>
+              ) : (
+                'Load More'
+              )}
+            </Button>
+          </div>
+        )}
+
+        {/* Asset Modal */}
+        {selectedAsset && (
+          <AssetModal asset={selectedAsset} onClose={() => setSelectedAsset(null)} />
+        )}
+
+        {/* Uploading Overlay */}
+        {uploading && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg text-center">
+              <ArrowPathIcon className="h-8 w-8 animate-spin mx-auto mb-4" />
+              <p>Uploading files...</p>
+            </div>
+          </div>
         )}
       </div>
-
-      {/* Asset Grid */}
-      {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <ArrowPathIcon className="h-8 w-8 animate-spin text-gray-400" />
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-          {assets.map((asset, index) => (
-            <AssetCard
-              key={index}
-              asset={asset}
-              selected={selectedAssets.includes(asset.public_id)}
-              onSelect={() => setSelectedAsset(asset)}
-              onToggleSelect={() => {
-                setSelectedAssets(prev =>
-                  prev.includes(asset.public_id)
-                    ? prev.filter(id => id !== asset.public_id)
-                    : [...prev, asset.public_id]
-                );
-              }}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Pagination */}
-      {pagination.next_cursor && (
-        <div className="flex justify-center mt-6">
-          <Button
-            onClick={loadMore}
-            disabled={isLoadingMore}
-          >
-            {isLoadingMore ? (
-              <>
-                <ArrowPathIcon className="h-4 w-4 animate-spin" />
-                Loading...
-              </>
-            ) : (
-              'Load More'
-            )}
-          </Button>
-        </div>
-      )}
-
-      {/* Asset Modal */}
-      {selectedAsset && (
-        <AssetModal asset={selectedAsset} onClose={() => setSelectedAsset(null)} />
-      )}
-
-      {/* Uploading Overlay */}
-      {uploading && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg text-center">
-            <ArrowPathIcon className="h-8 w-8 animate-spin mx-auto mb-4" />
-            <p>Uploading files...</p>
-          </div>
-        </div>
-      )}
-    </div>
+    </Suspense>
   );
 };
 

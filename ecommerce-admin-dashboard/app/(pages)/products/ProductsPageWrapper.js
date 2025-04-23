@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useState, Suspense } from 'react'
 import Pagination from '@/components/Pagination';
 import DeleteModal from '@/components/DeleteModal';
 import DataTable from '@/components/DataTable';
@@ -32,7 +32,7 @@ const ProductsPageWrapper = ({ products, pagination, currentPage}) => {
   const onDeleteClick = () => setIsDeleteModalOpen(true)
 
   return (
-    <div>
+    <Suspense fallback={<div>Loading products...</div>}>
       <DataTable
       data={products}
       columns={productColumns}
@@ -51,7 +51,7 @@ const ProductsPageWrapper = ({ products, pagination, currentPage}) => {
             itemName="products"
             selectedCount={selectedProducts.length}
         />
-    </div>
+    </Suspense>
   )
 }
 

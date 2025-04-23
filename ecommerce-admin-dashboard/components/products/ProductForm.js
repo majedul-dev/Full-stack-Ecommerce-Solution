@@ -1,5 +1,5 @@
 "use client"
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import {
     PhotoIcon,
     TrashIcon,
@@ -141,6 +141,7 @@ const ProductForm = ({product, isEditPage, productId}) => {
   
 
   return (
+    <Suspense fallback={<div>Loading products...</div>}>
     <div className="p-6 max-w-6xl mx-auto">
       {/* Header */}
       <ProductCreateUpdateHeader
@@ -568,6 +569,7 @@ const ProductForm = ({product, isEditPage, productId}) => {
         </div>
       </div>
       </div>
+      </Suspense>
   )
 }
 

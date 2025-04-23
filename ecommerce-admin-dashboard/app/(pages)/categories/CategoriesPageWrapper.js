@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import Pagination from '../../../components/Pagination';
 import DeleteModal from '@/components/DeleteModal';
 import { deleteCategory } from '@/actions/categoryAction';
@@ -51,7 +51,7 @@ export default function CategoriesPageWrapper({ categories, pagination, currentP
   };
 
   return (
-    <div>
+    <Suspense fallback={<div>Loading products...</div>}>
       <DataTable
       data={categories}
       columns={categoryColumns}
@@ -70,6 +70,6 @@ export default function CategoriesPageWrapper({ categories, pagination, currentP
         itemName="category"
         selectedCount={selectedCategories.length}
       />
-    </div>
+    </Suspense>
   );
 }
