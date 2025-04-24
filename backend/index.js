@@ -7,7 +7,8 @@ const router = require('./routes')
 
 const app = express()
 const allowedOrigins = [
-    'https://3000-majeduldev-fullstackeco-emaatv5g85b.ws-us118.gitpod.io'
+  'https://3000-majeduldev-fullstackeco-emaatv5g85b.ws-us118.gitpod.io',
+  'https://full-stack-ecommerce-solution-gde4stuz9-majeduldevs-projects.vercel.app'
   ];
   
   const corsOptions = {

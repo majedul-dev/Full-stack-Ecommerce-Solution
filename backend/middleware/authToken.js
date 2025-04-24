@@ -2,23 +2,26 @@ const jwt = require('jsonwebtoken');
 
 async function authToken(req, res, next) {
     try {
-        let token = req.cookies?.token || (req.headers.authorization?.startsWith("Bearer ") ? req.headers.authorization.split(" ")[1] : null);
+        // Enhanced token extraction
+        let token = req.cookies?.token || 
+                   (req.headers?.authorization?.startsWith("Bearer ") ? 
+                    req.headers.authorization.split(" ")[1] : null);
 
-        // Check if token is provided
-        if (!token) {
+        // Validate token presence and format
+        if (!token || typeof token !== 'string' || token.split('.').length !== 3) {
             return res.status(401).json({
-                message: "Please login to access this resource.",
+                message: "Invalid token format",
                 error: true,
                 success: false,
             });
         }
 
-        // Verify token
+        // Verify token with enhanced error handling
         jwt.verify(token, process.env.TOKEN_SECRET_KEY, (err, decoded) => {
             if (err) {
                 console.error("JWT Verification Error:", err);
-
-                // Handle expired token
+                
+                // Specific error handling
                 if (err.name === 'TokenExpiredError') {
                     return res.status(401).json({
                         message: "Session expired. Please login again.",
@@ -26,24 +29,40 @@ async function authToken(req, res, next) {
                         success: false,
                     });
                 }
-
-                // Other errors
+                if (err.name === 'JsonWebTokenError') {
+                    return res.status(401).json({
+                        message: "Invalid token. Please login again.",
+                        error: true,
+                        success: false,
+                        details: err.message // Include specific error detail
+                    });
+                }
+                
+                // Generic error fallback
                 return res.status(401).json({
-                    message: "Invalid token. Please login again.",
+                    message: "Authentication failed",
                     error: true,
                     success: false,
                 });
             }
 
-            // Token is valid, set userId from decoded token
-            req.userId = decoded?._id;
+            // Additional payload validation
+            if (!decoded?._id) {
+                return res.status(401).json({
+                    message: "Invalid token payload",
+                    error: true,
+                    success: false,
+                });
+            }
+
+            req.userId = decoded._id;
             next();
         });
 
     } catch (err) {
         console.error("Auth Middleware Error:", err);
         res.status(500).json({
-            message: "An unexpected error occurred.",
+            message: "Internal server error during authentication",
             error: true,
             success: false,
         });
