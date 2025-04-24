@@ -9,7 +9,7 @@ const app = express()
 const isProduction = process.env.NODE_ENV === 'production';
 
 const productionOrigins = [
-  'https://full-stack-ecommerce-solution-production.up.railway.app',
+  'https://full-stack-ecommerce-solution-mzxrprjwh-majeduldevs-projects.vercel.app',
 ];
 
 const developmentOrigins = [
