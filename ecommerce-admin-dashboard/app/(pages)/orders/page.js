@@ -6,8 +6,6 @@ import Filters from '@/components/Filters';
 import { filterOptions } from './_config/orderFilterOptions';
 import { getToken } from "@/lib/auth";
 
-export const dynamic = 'force-static';
-
 export default async function ({ searchParams }) {
   const token = await getToken();
   const cleanParams = {};
