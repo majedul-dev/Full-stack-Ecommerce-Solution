@@ -6,13 +6,19 @@ const connectDB = require('./config/db')
 const router = require('./routes')
 
 const app = express()
-const allowedOrigins = [
-  'https://3000-majeduldev-fullstackeco-emaatv5g85b.ws-us118.gitpod.io',
-  'https://full-stack-ecommerce-solution-gde4stuz9-majeduldevs-projects.vercel.app'
-  ];
+const isProduction = process.env.NODE_ENV === 'production';
+
+const productionOrigins = [
+  'https://full-stack-ecommerce-solution-production.up.railway.app',
+];
+
+const developmentOrigins = [
+  'http://localhost:3000',
+  'https://3000-majeduldev-fullstackeco-emaatv5g85b.ws-us118.gitpod.io'
+];
   
   const corsOptions = {
-    origin: allowedOrigins,
+    origin: isProduction ? productionOrigins : developmentOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
