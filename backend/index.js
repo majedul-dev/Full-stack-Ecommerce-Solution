@@ -10,11 +10,14 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 const productionOrigins = [
   'https://full-stack-ecommerce-solution-mzxrprjwh-majeduldevs-projects.vercel.app',
+  'https://adminpannelclient.vercel.app'
 ];
 
 const developmentOrigins = [
   'http://localhost:3000',
-  'https://3000-majeduldev-fullstackeco-emaatv5g85b.ws-us118.gitpod.io'
+  'https://3000-majeduldev-fullstackeco-emaatv5g85b.ws-us118.gitpod.io',
+  'https://3000-majeduldev-fullstackeco-emaatv5g85b.ws-us118.gitpod.io',
+  'https://adminpannelclient.vercel.app'
 ];
   
   const corsOptions = {
